@@ -20,19 +20,19 @@ def test_data():
     img_path = os.path.join('data', 'oxford-iiit-pet-noses', 'images-original', 'images')
     data = SnoutNetDataset(label_path, img_path)
     dataloader = DataLoader(data, shuffle=False)
-    iterator = iter(dataloader)
+    it = iter(dataloader)
 
-    _input = input('Enter anything to continue, "p" to continue and plot, "q" to quit > ')
+    _input = input('Enter [q] to quit, [p] to continue and plot, or anything else to continue without plotting > ')
     while _input != 'q':
-        img, label = next(iterator)
+        img, label = next(it)
         print('Feature shape:', img.size())
         print('Label shape:', label.size())
-        print('Nose position:', label.tolist())
+        print('Adjusted nose position:', label.tolist()[0])
         if _input == 'p':
             img = img[0].squeeze()
             label = label.tolist()[0]
             plt.imshow(img.permute(1, 2, 0), cmap='gray')
-            plt.plot(label[0], label[1], "og", markersize=5)
+            plt.plot(label[0], label[1], "ro", markersize=10)
             plt.show()
         _input = input('Enter anything to continue, "p" to continue and plot, "q" to quit > ')
 

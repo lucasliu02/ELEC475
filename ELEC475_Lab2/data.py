@@ -21,9 +21,10 @@ class SnoutNetDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
-        image = self.resizer(read_image(img_path))  # reshape image to 3x277x277
-        label = interpolate(torch.FloatTensor(literal_eval(self.img_labels.iloc[idx, 1])), 227)
-        # label = self.img_labels.iloc[idx, 1]
+        image = read_image(img_path)
+        image_dims = torch.FloatTensor([image.size(dim=2), image.size(dim=1)])
+        image = self.resizer(image)
+        label = torch.FloatTensor(literal_eval(self.img_labels.iloc[idx, 1])) * 227 / image_dims
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
