@@ -4,9 +4,13 @@ import pandas as pd
 from torch.utils.data import Dataset
 from torchvision.io import read_image
 from torchvision.transforms.v2 import Resize
-from torch.nn.functional import interpolate
+from torchvision.transforms.functional import pil_to_tensor
 from ast import literal_eval
+from PIL import Image
 
+def adjust_label(label, x, y):
+    dims = torch.FloatTensor([x, y])
+    # label = label *
 
 class SnoutNetDataset(Dataset):
     def __init__(self, annotations_file, img_dir, transform=None, target_transform=None):
@@ -14,17 +18,26 @@ class SnoutNetDataset(Dataset):
         self.img_dir = img_dir
         self.transform = transform
         self.target_transform = target_transform
-        self.resizer = Resize([227, 227])
+        self.resize = Resize([227, 227])
 
     def __len__(self):
         return len(self.img_labels)
 
     def __getitem__(self, idx):
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
-        image = read_image(img_path)
-        image_dims = torch.FloatTensor([image.size(dim=2), image.size(dim=1)])
-        image = self.resizer(image)
-        label = torch.FloatTensor(literal_eval(self.img_labels.iloc[idx, 1])) * 227 / image_dims
+        # image = read_image(img_path)
+        # image_dims = torch.FloatTensor([image.size(dim=2), image.size(dim=1)])
+        # image = self.resize(image)
+        # label = torch.FloatTensor(literal_eval(self.img_labels.iloc[idx, 1])) * 227 / image_dims
+
+        image = Image.open(img_path)
+        image = image.convert('RGB')
+        # image = pil_to_tensor(image).type(torch.uint8)
+        x, y = image.size
+        label = torch.FloatTensor(literal_eval(self.img_labels.iloc[idx, 1])) * 227 / torch.FloatTensor([x, y])
+        # image = self.resize(image)
+        label = label.type(torch.float32)
+
         if self.transform:
             image = self.transform(image)
         if self.target_transform:

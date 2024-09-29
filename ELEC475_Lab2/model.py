@@ -1,6 +1,6 @@
-import torch
 import torch.nn.functional as F
 import torch.nn as nn
+import torch
 
 class SnoutNetModel(nn.Module):
     def __init__(self):
@@ -12,27 +12,23 @@ class SnoutNetModel(nn.Module):
         self.fc2 = nn.Linear(1024, 1024)
         self.fc3 = nn.Linear(1024, 2)
         # self.type = ?
-        # self.input_shape(3, 227*227) #?
+        self.input_shape = (3, 227, 227)
+        self.mp = nn.MaxPool2d(3, 2, 1)
 
     def forward(self, x):
         # kernel for MP is 3 or 4???
-        mp = nn.MaxPool2d(3, 2, 1)
-
         x = self.conv1(x)
         x = F.relu(x)
-        # x = F.max_pool2d(x, 4, 2, 1)
-        x = mp(x)
+        x = self.mp(x)
         x = self.conv2(x)
         x = F.relu(x)
-        # x = F.max_pool2d(x, 4, 2, 1)
-        x = mp(x)
+        x = self.mp(x)
         x = self.conv3(x)
         x = F.relu(x)
-        # x = F.max_pool2d(x, 4, 2, 1)
-        x = mp(x)
+        x = self.mp(x)
 
-        x = x.view([1, 4096])
-
+        # x = x.view(x.size(dim=0), 1, 4096)
+        x = torch.flatten(x, 1)
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
