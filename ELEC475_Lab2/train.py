@@ -14,26 +14,26 @@ from model import SnoutNetModel
 from torch.utils.data import DataLoader
 
 
-def train(n_epochs, optimizer, model, loss_fn, train_loader, test_loader, scheduler, device, save_file=None, plot_file=None):
+def train(n_epochs, optimizer, model, loss_fn, train_loader, val_loader, scheduler, device, save_file=None, plot_file=None):
     losses_train = []
-    losses_test = []
+    losses_val = []
 
     for epoch in range(1, n_epochs+1):
         print('epoch ', epoch)
         loss_train = 0
-        loss_test = 0
+        loss_val = 0
 
-        for phase, loader in [('train', iter(train_loader)), ('test', iter(test_loader))]:
+        for phase, loader in [('train', iter(train_loader)), ('val', iter(val_loader))]:
             print(phase)
             for images, labels in loader:
                 images = images.to(device=device)
                 labels = labels.to(device=device)
-                if phase == 'test':
+                if phase == 'val':
                     model.eval()
                     with torch.no_grad():
                         outputs = model(images)
                         loss = loss_fn(outputs, labels)
-                        loss_test += loss.item()
+                        loss_val += loss.item()
                 else:
                     model.train()
                     outputs = model(images)
@@ -45,10 +45,10 @@ def train(n_epochs, optimizer, model, loss_fn, train_loader, test_loader, schedu
 
         scheduler.step(loss_train)
         losses_train += [loss_train/len(train_loader)]
-        losses_test += [loss_test/len(test_loader)]
+        losses_val += [loss_val / len(val_loader)]
 
-        print('{} Epoch {}, Training loss {}, Testing loss {}'.format(
-            datetime.datetime.now(), epoch, loss_train/len(train_loader), loss_test/len(test_loader)))
+        print('{} Epoch {}, Training loss {}, Validation loss {}'.format(
+            datetime.datetime.now(), epoch, loss_train/len(train_loader), loss_val/len(val_loader)))
 
         if save_file is not None:
             torch.save(model.state_dict(), save_file)
@@ -56,7 +56,7 @@ def train(n_epochs, optimizer, model, loss_fn, train_loader, test_loader, schedu
             plt.figure(2, figsize=(12, 7))
             plt.clf()
             plt.plot(losses_train, label='train')
-            plt.plot(losses_test, label='test')
+            plt.plot(losses_val, label='val')
             plt.xlabel('epoch')
             plt.ylabel('loss')
             plt.legend(loc=1)
@@ -107,9 +107,9 @@ def main():
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
     loss_fn = nn.MSELoss(reduction='mean')
 
-    test_path = os.path.join('data', 'oxford-iiit-pet-noses', 'test_noses.txt')
-    test_set = SnoutNetDataset(test_path, img_path, train_transform)
-    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
+    val_path = os.path.join('data', 'oxford-iiit-pet-noses', 'test_noses.txt')
+    val_set = SnoutNetDataset(val_path, img_path, train_transform)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
     
     train(
         n_epochs,
@@ -117,7 +117,7 @@ def main():
         model,
         loss_fn,
         train_loader,
-        test_loader,
+        val_loader,
         scheduler,
         device,
         save_file,

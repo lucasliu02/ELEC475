@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="e0bf867a-5030-4118-a177-d5895980e292" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../ELEC475_Lab2/data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ELEC475_Lab1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ELEC475_Lab1.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ELEC475_Lab2/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ELEC475_Lab2/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ELEC475_Lab2/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ELEC475_Lab2/test_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ELEC475_Lab2/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ELEC475_Lab2/plot.png" beforeDir="false" afterPath="$PROJECT_DIR$/../ELEC475_Lab2/train_results/plot-b256.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ELEC475_Lab2/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ELEC475_Lab2/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ELEC475_Lab2/weights.pth" beforeDir="false" afterPath="$PROJECT_DIR$/../ELEC475_Lab2/train_results/weights-b256.pth" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,23 +22,35 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;lucasliu02&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/lucasliu02/ELEC475.git&quot;,
+    &quot;accountId&quot;: &quot;f834a184-a872-4e7f-8796-fa13278ad116&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2mf7GdBwflg4WyCXKOd46tX0W48" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/lliu2/PycharmProjects/ELEC475/ELEC475_Lab1",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/lliu2/work/PycharmProjects/ELEC475/ELEC475_Lab1&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
