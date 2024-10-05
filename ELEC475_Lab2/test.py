@@ -78,6 +78,13 @@ def main():
     results = [groundtruth_x, groundtruth_y, estimated_x, estimated_y, distances]
     results = np.array(results).T.tolist()
 
+    stats_path = os.path.join('test_results', 'stats.csv')
+    stats_exists = os.path.isfile(stats_path)
+    with open(stats_path, 'a', newline='') as f:
+        writer = csv.writer(f)
+        if not stats_exists:
+            writer.writerow(['filename', 'min', 'mean', 'max', 'std dev'])
+        writer.writerow([results_file, minimum, average, maximum, std_dev])
 
     with open(results_file, 'w', newline='') as f:
         writer = csv.writer(f)
