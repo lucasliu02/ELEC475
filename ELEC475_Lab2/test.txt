@@ -1,0 +1,9 @@
+# append -p flag to command to plot estimated and true nose locations for each test result
+
+python test.py -s weights-b64-e30.pth -r results-b64-e30.csv
+
+python test.py -s weights-b64-e30-flip.pth -r results-b64-e30-flip.csv
+
+python test.py -s weights-b64-e30-blur.pth -r results-b64-e30-blur.csv
+
+python test.py -s weights-b64-e30-flip-blur.pth -r results-b64-e30-flip-blur.csv

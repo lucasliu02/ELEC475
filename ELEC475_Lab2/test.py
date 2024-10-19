@@ -1,14 +1,16 @@
 import argparse
 import os
 import csv
+import time
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 from torchvision.transforms import v2
+from torch.utils.data import ConcatDataset
 from math import dist
 from model import SnoutNetModel
-from data import SnoutNetDataset
+from data import SnoutNetDataset, flip_label
 from statistics import mean, stdev
 
 def main():
@@ -16,16 +18,20 @@ def main():
     argparser.add_argument('-s', metavar='state', type=str, help='parameter file (.pth)')
     argparser.add_argument('-r', metavar='results', help='results file (.csv)')
     argparser.add_argument('-p', action='store_true', help='flag for plotting every result')
+    # argparser.add_argument('-a', metavar='augmentation', nargs='+', help='list data augmentations "flip" and/or "blur"')
 
     args = argparser.parse_args()
 
     save_file = args.s if args.s is not None else 'weights.pth'
     results_file = args.r if args.r is not None else 'results.csv'
     plot_flag = args.p
+    # aug_args = args.a if args.a is not None else []
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    # torch.set_default_device(device)
 
     save_file = os.path.join('train_results', save_file)
     results_file = os.path.join('test_results', results_file)
+    valid_augs = ['flip', 'blur']
 
     print('\t\tusing device ', device)
 
@@ -34,11 +40,16 @@ def main():
     model.to(device)
     model.eval()
 
-    test_transform = v2.Compose([v2.ToImage(), v2.ToDtype(torch.float32, scale=True), v2.Resize([227, 227])])
-
     label_path = os.path.join('data', 'oxford-iiit-pet-noses', 'test_noses.txt')
     img_path = os.path.join('data', 'oxford-iiit-pet-noses', 'images-original', 'images')
-    test_set = SnoutNetDataset(label_path, img_path, test_transform)
+    test_set = SnoutNetDataset(label_path, img_path)
+    # for aug in aug_args:
+    #     if aug in valid_augs:
+    #         if aug == 'flip':
+    #             aug_set = SnoutNetDataset(label_path, img_path, v2.RandomVerticalFlip(p=1), flip_label)
+    #         elif aug == 'blur':
+    #             aug_set = SnoutNetDataset(label_path, img_path, v2.GaussianBlur(kernel_size=(5, 9), sigma=(2.0, 5.0)))
+    #         test_set = ConcatDataset([test_set, aug_set])
     test_loader = DataLoader(test_set, batch_size=1, shuffle=True)
     it = iter(test_loader)
 
@@ -49,6 +60,7 @@ def main():
     distances = []
     minimum = 999
     maximum = 0
+    start_time = time.time()
     for image, label in it:
         image = image.to(device=device)
         output = model(image)
@@ -71,6 +83,7 @@ def main():
             plt.plot(gt_x, gt_y, "ro", markersize=10)
             plt.plot(e_x, e_y, "bo", markersize=10)
             plt.show()
+    duration = time.time() - start_time
 
     average = mean(distances)
     std_dev = stdev(distances)
@@ -83,8 +96,8 @@ def main():
     with open(stats_path, 'a', newline='') as f:
         writer = csv.writer(f)
         if not stats_exists:
-            writer.writerow(['filename', 'min', 'mean', 'max', 'std dev'])
-        writer.writerow([results_file, minimum, average, maximum, std_dev])
+            writer.writerow(['filename', 'min', 'mean', 'max', 'std dev', 'duration'])
+        writer.writerow([results_file, minimum, average, maximum, std_dev, duration])
 
     with open(results_file, 'w', newline='') as f:
         writer = csv.writer(f)

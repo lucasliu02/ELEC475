@@ -2,7 +2,7 @@ import os
 import torch
 import pandas as pd
 from torch.utils.data import Dataset
-from torchvision.transforms.v2 import Resize
+from torchvision.transforms.v2 import ToImage, ToDtype, Resize, Compose
 from ast import literal_eval
 from PIL import Image
 
@@ -12,7 +12,7 @@ class SnoutNetDataset(Dataset):
         self.img_dir = img_dir
         self.transform = transform
         self.target_transform = target_transform
-        # self.resize = Resize([227, 227])
+        self.reshape = Compose([ToImage(), ToDtype(torch.float32, scale=True), Resize([227, 227])])
 
     def __len__(self):
         return len(self.img_labels)
@@ -31,9 +31,17 @@ class SnoutNetDataset(Dataset):
         label = torch.FloatTensor(literal_eval(self.img_labels.iloc[idx, 1])) * 227 / torch.FloatTensor([x, y])
         # image = self.resize(image)
         label = label.type(torch.float32)
+        image = self.reshape(image)
 
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
             label = self.target_transform(label)
+            # for t in self.target_transform:
+            #     label = t(label)
         return image, label
+
+def flip_label(label):
+    # vertical flip
+    label[1] = 227 - label[1]
+    return label

@@ -1,0 +1,7 @@
+python train.py -s weights-b64-e30.pth -b 64 -e 30 -p plot-b64-e30.png
+
+python train.py -s weights-b64-e30-flip.pth -b 64 -e 30 -p plot-b64-e30-flip.png -a flip
+
+python train.py -s weights-b64-e30-blur.pth -b 64 -e 30 -p plot-b64-e30-blur.png -a blur
+
+python train.py -s weights-b64-e30-flip-blur.pth -b 64 -e 30 -p plot-b64-e30-flip-blur.png -a flip blur
