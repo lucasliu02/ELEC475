@@ -11,12 +11,10 @@ class SnoutNetModel(nn.Module):
         self.fc1 = nn.Linear(4096, 1024)
         self.fc2 = nn.Linear(1024, 1024)
         self.fc3 = nn.Linear(1024, 2)
-        # self.type = ?
         self.input_shape = (3, 227, 227)
         self.mp = nn.MaxPool2d(3, 2, 1)
 
     def forward(self, x):
-        # kernel for MP is 3 or 4???
         x = self.conv1(x)
         x = F.relu(x)
         x = self.mp(x)
@@ -27,7 +25,6 @@ class SnoutNetModel(nn.Module):
         x = F.relu(x)
         x = self.mp(x)
 
-        # x = x.view(x.size(dim=0), 1, 4096)
         x = torch.flatten(x, 1)
         x = self.fc1(x)
         x = F.relu(x)
@@ -36,4 +33,3 @@ class SnoutNetModel(nn.Module):
         x = self.fc3(x)
 
         return x
-        # one more relu?

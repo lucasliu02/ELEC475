@@ -31,7 +31,7 @@ def main():
 
     save_file = os.path.join('train_results', save_file)
     results_file = os.path.join('test_results', results_file)
-    valid_augs = ['flip', 'blur']
+    # valid_augs = ['flip', 'blur']
 
     print('\t\tusing device ', device)
 

@@ -19,17 +19,10 @@ class SnoutNetDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path = os.path.join(self.img_dir, self.img_labels.iloc[idx, 0])
-        # image = read_image(img_path)
-        # image_dims = torch.FloatTensor([image.size(dim=2), image.size(dim=1)])
-        # image = self.resize(image)
-        # label = torch.FloatTensor(literal_eval(self.img_labels.iloc[idx, 1])) * 227 / image_dims
-
         image = Image.open(img_path)
         image = image.convert('RGB')
-        # image = pil_to_tensor(image).type(torch.uint8)
         x, y = image.size
         label = torch.FloatTensor(literal_eval(self.img_labels.iloc[idx, 1])) * 227 / torch.FloatTensor([x, y])
-        # image = self.resize(image)
         label = label.type(torch.float32)
         image = self.reshape(image)
 
@@ -37,8 +30,6 @@ class SnoutNetDataset(Dataset):
             image = self.transform(image)
         if self.target_transform:
             label = self.target_transform(label)
-            # for t in self.target_transform:
-            #     label = t(label)
         return image, label
 
 def flip_label(label):

@@ -64,7 +64,6 @@ def init_weights(m):
     if type(m) == nn.Linear or type(m) == nn.Conv2d:
         torch.nn.init.xavier_uniform_(m.weight)
         m.bias.data.fill_(0.01)
-    # TODO: if type is conv2d?
 
 def main():
     argparser = argparse.ArgumentParser()
@@ -95,9 +94,6 @@ def main():
     model.to(device)
     model.apply(init_weights)
     summary(model, input_size=(batch_size, *model.input_shape))
-
-    # train_transform = v2.Compose([v2.ToImage(), v2.ToDtype(torch.float32, scale=True), v2.Resize([227, 227]), *augmentations])
-    # train_transform = v2.Compose(augmentations)
 
     label_path = os.path.join('data', 'oxford-iiit-pet-noses', 'train_noses.txt')
     img_path = os.path.join('data', 'oxford-iiit-pet-noses', 'images-original', 'images')
