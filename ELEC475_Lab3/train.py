@@ -24,21 +24,19 @@ def train(n_epochs, optimizer, model, loss_fn, train_loader, val_loader, schedul
         for phase, loader in [('train', iter(train_loader)), ('val', iter(val_loader))]:
             print(phase)
             for images, labels in loader:
-                print(images.shape)
-                print(labels.shape)
                 images = images.to(device=device)
                 labels = labels.to(device=device)
                 if phase == 'val':
                     model.eval()
                     with torch.no_grad():
                         outputs = model(images)
-                        print(outputs.shape)
                         loss = loss_fn(outputs, labels)
                         loss_val += loss.item()
                 else:
                     model.train()
                     outputs = model(images)
-                    print(outputs.shape)
+                    # print(outputs)
+                    # print(outputs.shape)
                     loss = loss_fn(outputs, labels)
                     optimizer.zero_grad()
                     loss.backward()
@@ -82,7 +80,7 @@ def main():
 
     save_file = args.s if args.s is not None else 'weights.pth'
     n_epochs = args.e if args.e is not None else 30
-    batch_size = args.b if args.b is not None else 32
+    batch_size = args.b if args.b is not None else 64
     plot_file = args.p if args.p is not None else 'plot.png'
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -93,6 +91,7 @@ def main():
         model.classifier.append(nn.Linear(1000, 100))
         model.to(device)
         # is softmax needed or included in crossentropyloss?
+        # crossentropyloss combines logsoftmax and nllloss, do NOT use softmax before
         print(model)
     elif args.m == 'vgg16':
         # model = torchvision.models.vgg16().to(device).apply(init_weights)
@@ -103,6 +102,9 @@ def main():
     print(model)
 
     # summary(model, input_size=(batch_size, 3, 224, 224))
+
+    if not os.path.exists('train_results'):
+        os.makedirs('train_results')
 
     save_file = os.path.join('train_results', save_file)
     plot_file = os.path.join('train_results', plot_file)
