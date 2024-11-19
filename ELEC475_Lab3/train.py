@@ -72,9 +72,10 @@ def main():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('-s', metavar='state', type=str, help='parameter file (.pth)')
     argparser.add_argument('-e', metavar='epochs', type=int, help='# of epochs [30]')
-    argparser.add_argument('-b', metavar='batch size', type=int, help='batch size [32]')
+    argparser.add_argument('-b', metavar='batch size', type=int, help='batch size [64]')
     argparser.add_argument('-p', metavar='plot', type=str, help='output loss plot file (.png)')
     argparser.add_argument('-m', metavar='model', type=str, choices=['alexnet', 'vgg16', 'resnet18'], help='alexnet, vgg16, or resnet18', required=True)
+    argparser.add_argument('-o', metavar='optimizer', type=str, choices=['adam', 'sgd'], help='adam or sgd', required=True)
 
     args = argparser.parse_args()
 
@@ -87,21 +88,23 @@ def main():
     if args.m == 'alexnet':
         # model = torchvision.models.alexnet().to(device).apply(init_weights)
         model = alexnet(weights=AlexNet_Weights.IMAGENET1K_V1)
-        print(model)
         model.classifier.append(nn.Linear(1000, 100))
-        model.to(device)
         # is softmax needed or included in crossentropyloss?
         # crossentropyloss combines logsoftmax and nllloss, do NOT use softmax before
-        print(model)
     elif args.m == 'vgg16':
         # model = torchvision.models.vgg16().to(device).apply(init_weights)
         model = vgg16(weights=VGG16_Weights.IMAGENET1K_V1).to(device)
+        model.classifier.append(nn.Linear(1000, 100))
     else: # resnet18
         # model = torchvision.models.resnet18().to(device).apply(init_weights)
         model = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1).to(device)
+        # model.fc.append(nn.Linear(1000, 100))
+        model.fc = nn.Sequential(
+            model.fc,
+            nn.Linear(1000, 100)
+        )
     print(model)
-
-    # summary(model, input_size=(batch_size, 3, 224, 224))
+    model.to(device)
 
     if not os.path.exists('train_results'):
         os.makedirs('train_results')
@@ -124,7 +127,10 @@ def main():
 
     train_set = CIFAR100('data/cifar100', train=True, download=True, transform=transform)
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
-    optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    if args.o == 'adam':
+        optimizer = optim.Adam(model.parameters(), lr=1e-5, weight_decay=1e-5)
+    else:   # sgd
+        optimizer = optim.SGD(model.parameters(), lr=1e-5, weight_decay=1e-5)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
     # loss_fn = nn.MSELoss(size_average=None, reduce=None, reduction='mean')
     loss_fn = nn.CrossEntropyLoss()
