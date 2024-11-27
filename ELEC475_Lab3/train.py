@@ -2,12 +2,10 @@ import argparse
 import torch
 import os
 import datetime
-import torchvision.models
 import torch.optim as optim
 import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 from torch import nn
-from torchinfo import summary
 from torchvision.datasets import CIFAR100
 from torch.utils.data import DataLoader
 from torchvision.models import alexnet, AlexNet_Weights, vgg16, VGG16_Weights, resnet18, ResNet18_Weights
@@ -76,13 +74,16 @@ def main():
     argparser.add_argument('-p', metavar='plot', type=str, help='output loss plot file (.png)')
     argparser.add_argument('-m', metavar='model', type=str, choices=['alexnet', 'vgg16', 'resnet18'], help='alexnet, vgg16, or resnet18', required=True)
     argparser.add_argument('-o', metavar='optimizer', type=str, choices=['adam', 'sgd'], help='adam or sgd', required=True)
-
+    argparser.add_argument('-r', type=str, help='training results directory')
+    argparser.add_argument('-d', type=str, help='dataset directory')
     args = argparser.parse_args()
 
     save_file = args.s if args.s is not None else 'weights.pth'
     n_epochs = args.e if args.e is not None else 30
     batch_size = args.b if args.b is not None else 64
     plot_file = args.p if args.p is not None else 'plot.png'
+    results_dir = args.r if args.r is not None else None
+    dataset_dir = args.d if args.d is not None else 'data/cifar100'
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     if args.m == 'alexnet':
@@ -106,18 +107,15 @@ def main():
     print(model)
     model.to(device)
 
-    if not os.path.exists('train_results'):
-        os.makedirs('train_results')
-
-    save_file = os.path.join('train_results', save_file)
-    plot_file = os.path.join('train_results', plot_file)
+    # if not os.path.exists('train_results'):
+    #     os.makedirs('train_results')
+    if results_dir is not None:
+        if not os.path.exists(results_dir):
+            os.makedirs(results_dir)
+        save_file = os.path.join(results_dir, save_file)
+        plot_file = os.path.join(results_dir, plot_file)
 
     print('\t\tusing device ', device)
-
-    # transform = transforms.Compose([
-    #     #     transforms.ToTensor(),
-    #     #     transforms.Resize([224, 224])
-    #     # ])
 
     # resized to 256 with bilinear interpolation
     # cropped to 224
@@ -125,17 +123,17 @@ def main():
     # normalized with mean=[0.485, 0.456, 0.406] and std=[0.229, 0.224, 0.225]
     transform = AlexNet_Weights.IMAGENET1K_V1.transforms()
 
-    train_set = CIFAR100('data/cifar100', train=True, download=True, transform=transform)
+    train_set = CIFAR100(dataset_dir, train=True, download=True, transform=transform)
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
     if args.o == 'adam':
         optimizer = optim.Adam(model.parameters(), lr=1e-5, weight_decay=1e-5)
-    else:   # sgd
-        optimizer = optim.SGD(model.parameters(), lr=1e-5, weight_decay=1e-5)
+    else:   # sgd (lr=1e-3, not 1e-5)
+        optimizer = optim.SGD(model.parameters(), lr=1e-3, weight_decay=1e-5)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
     # loss_fn = nn.MSELoss(size_average=None, reduce=None, reduction='mean')
     loss_fn = nn.CrossEntropyLoss()
 
-    val_set = CIFAR100('data/cifar100', train=False, download=True, transform=transform)
+    val_set = CIFAR100(dataset_dir, train=False, download=True, transform=transform)
     val_loader = torch.utils.data.DataLoader(val_set, batch_size=batch_size, shuffle=False)
 
     train(

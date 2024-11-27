@@ -1,0 +1,20 @@
+# use -d argument to specify dataset directory (defaults to data/cifar100)
+# modify -r argument to specify the directory where training results will be saved to (defaults to current dir)
+
+# alexnet, adam, 5 epochs, batch size 64
+python train.py -r train_results -m alexnet -o adam -e 5 -b 64 -s weights-alexnet-e5-b64-lr1e-5.pth -p plot-alexnet-e5-b64-lr1e-5.png
+
+# alexnet, adam, 50 epochs, batch size 64
+python train.py -r train_results -m alexnet -o adam -e 50 -b 64 -s weights-alexnet-e50-b64-lr1e-5.pth -p plot-alexnet-e50-b64-lr1e-5.png
+
+# vgg16, adam, 5 epochs, batch size 64
+python train.py -r train_results -m vgg16 -o adam -e 5 -b 64 -s weights-vgg16-e5-b64-lr1e-5.pth -p plot-vgg16-e50-b64-lr1e-5.png
+
+# vgg16, sgd, 50 epochs, batch size 64
+python train.py -r train_results -m vgg16 -o sgd -e 50 -b 64 -s weights-vgg16-e50-b64-sgd.pth -p plot-vgg16-e50-b64-sgd.png
+
+# resnet-18, adam, 5 epochs, batch size 64
+python train.py -r train_results -m resnet18 -o adam -e 5 -b 64 -s weights-resnet18-e5-b64-lr1e-5.pth -p plot-resnet18-e50-b64-lr1e-5.png
+
+# resnet-18, adam, 50 epochs, batch size 64
+python train.py -r train_results -m resnet18 -o adam -e 50 -b 64 -s weights-resnet18-e5-b64-lr1e-5.pth -p plot-resnet18-e50-b64-lr1e-5.png
