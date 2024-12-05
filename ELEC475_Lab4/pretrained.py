@@ -1,3 +1,4 @@
+import numpy
 import torch
 import argparse
 import numpy as np
@@ -9,6 +10,7 @@ from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
 from torchvision.datasets import VOCSegmentation
 from torchvision.transforms import InterpolationMode
 from torchvision.transforms.v2 import Compose, Resize, Normalize, ToDtype, ToImage
+from time import time
 
 
 idx_to_class = {
@@ -49,15 +51,16 @@ def main():
     model.to(device)
     model.eval()
     print(model)
-    print(summary(model))
+    summary(model)
 
     transform = Compose([ToImage(), ToDtype(torch.float32, scale=True), Resize([224,224]), Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
     target_transform = Compose([ToImage(), ToDtype(torch.int, scale=False), Resize([224,224], InterpolationMode.NEAREST)])
     dataset = VOCSegmentation('data', year='2012', image_set='val', download=False, transform=transform, target_transform=target_transform)    # transform=FCN_ResNet50_Weights.DEFAULT.transforms())
     data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
+    start_time = time()
     mious = []
-    all_ious = []
+    # all_ious = []
     with torch.no_grad():
         for images, targets in data_loader:
             images = images.to(device)
@@ -65,9 +68,10 @@ def main():
             outputs = model(images)['out']
             preds = torch.argmax(outputs, dim=1).squeeze().cpu().numpy()
             targets = targets.squeeze().cpu().numpy()
-            # numpy.savetxt('test', targets)
-
-
+            # numpy.savetxt('targets', targets)
+            # numpy.savetxt('outputs', outputs.squeeze().cpu().numpy())
+            # numpy.savetxt('preds', preds)
+            # print(preds.shape, targets.shape)
             ious = []
             for cls in range(num_classes):
                 pred_inds = preds == cls
@@ -77,11 +81,11 @@ def main():
                 union = np.logical_or(pred_inds, target_inds).sum()
                 if union == 0:
                     ious.append(float('nan'))
-                    all_ious.append(float('nan'))
+                    # all_ious.append(float('nan'))
                 else:
                     iou = intersection / union
                     ious.append(iou)
-                    all_ious.append(iou)
+                    # all_ious.append(iou)
                     # if target_inds.sum() > 0:
                     #     print(cls, intersection, union, iou)
 
@@ -101,9 +105,9 @@ def main():
                 plt.imshow(preds, cmap='gray')
                 plt.show()
 
-    print(np.nanmean(mious))        # 0.650
-    print(np.nanmean(all_ious))     # 0.598
-                                    # which is correct???
+    print('mIoU:', np.nanmean(mious))
+    # print(np.nanmean(all_ious))
+    print('Time elapsed:', (time() - start_time))
 
 if __name__ == '__main__':
     main()

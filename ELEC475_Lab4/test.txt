@@ -1,0 +1,7 @@
+# example for testing individual model
+# searches for parameter file under train_results/
+python test.py -r train_results -s ce.pth
+
+# example for testing teacher-student model
+# searches for parameter file under train_results/
+python test.py -r train_results -s kd.pth

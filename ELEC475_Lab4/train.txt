@@ -1,0 +1,9 @@
+# example for training individual model
+# default 30 epochs, batch size 64, learning rate 1e-3
+# saves results to train_results/
+python train.py -s ce.pth -p ce.png -r train_results
+
+# example for training teacher-student model
+# default 30 epochs, batch size 64, learning rate 1e-3, temperature 2, soft target loss weight 0.25
+# saves results to train_results/
+python train.py -s kd.pth -p kd.png -r train_results -d
